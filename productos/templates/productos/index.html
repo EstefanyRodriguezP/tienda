@@ -1,0 +1,120 @@
+{% extends "productos/base.html" %}
+{% block contenido %}
+<div class="mt-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h1>Bienvenida a la Tienda</h1>
+      <p class="text-muted">Administra tus productos, categorías y etiquetas desde aquí.</p>
+    </div>
+    <div>
+      <a href="{% url 'crear_producto' %}" class="btn btn-success me-2">+ Crear producto</a>
+      <a href="{% url 'lista_productos' %}" class="btn btn-primary">Ver productos</a>
+    </div>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-2">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Productos</h5>
+          <p class="display-6 mb-0">{{ total_productos }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-2">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Categorías</h5>
+          <p class="display-6 mb-0">{{ total_categorias }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-2">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Etiquetas</h5>
+          <p class="display-6 mb-0">{{ total_etiquetas }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buscador rápido -->
+  <div class="mb-4">
+    <form method="get" action="{% url 'lista_productos' %}" class="row g-2">
+      <div class="col-auto">
+        <input type="search" name="q" class="form-control" placeholder="Buscar producto por nombre...">
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-outline-primary" type="submit">Buscar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="row">
+    <!-- Últimos productos -->
+    <div class="col-lg-8 mb-4">
+      <div class="card">
+        <div class="card-header">
+          Últimos productos
+          <a href="{% url 'lista_productos' %}" class="btn btn-sm btn-link float-end">Ver todos</a>
+        </div>
+        <div class="card-body">
+          {% if ultimos_productos %}
+            <div class="list-group">
+              {% for p in ultimos_productos %}
+                <div class="list-group-item d-flex justify-content-between align-items-start">
+                  <div>
+                    <div class="fw-bold">{{ p.nombre }}</div>
+                    <small class="text-muted">{{ p.categoria.nombre }}</small>
+                    <div class="mt-1">
+                      {% for e in p.etiquetas.all %}
+                        <span class="badge bg-secondary">{{ e.nombre }}</span>
+                      {% empty %}
+                        <small class="text-muted">Sin etiquetas</small>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  <div class="text-end">
+                    <div class="mb-1">${{ p.precio }}</div>
+                    <a href="{% url 'detalle_producto' p.id %}" class="btn btn-sm btn-outline-primary">Ver</a>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted">Aún no hay productos. <a href="{% url 'crear_producto' %}">Crea uno</a>.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Categorías -->
+    <div class="col-lg-4 mb-4">
+      <div class="card">
+        <div class="card-header">Categorías</div>
+        <div class="card-body">
+          {% if categorias %}
+            <ul class="list-group">
+              {% for c in categorias %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  {{ c.nombre }}
+                  <span class="badge bg-primary rounded-pill">{{ c.num_productos }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted">No hay categorías.</p>
+          {% endif %}
+          <a href="{% url 'lista_categorias' %}" class="btn btn-link mt-2">Ver todas</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

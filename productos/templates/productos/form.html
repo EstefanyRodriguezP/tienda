@@ -1,0 +1,40 @@
+{% extends "productos/base.html" %}
+{% block contenido %}
+<div class="container mt-4">
+  <h2>
+    {% if form.instance.pk %}
+      Editar {{ tipo|title }}
+    {% else %}
+      Crear {{ tipo|title }}
+    {% endif %}
+  </h2>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="mb-3">
+        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}
+          <div class="form-text">{{ field.help_text }}</div>
+        {% endif %}
+        {% for error in field.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-success">
+      {% if form.instance.pk %}Actualizar{% else %}Crear{% endif %}
+    </button>
+
+    {% if tipo == 'categoria' %}
+      <a href="{% url 'lista_categorias' %}" class="btn btn-secondary">Cancelar</a>
+    {% elif tipo == 'etiqueta' %}
+      <a href="{% url 'lista_etiquetas' %}" class="btn btn-secondary">Cancelar</a>
+    {% elif tipo == 'producto' %}
+      <a href="{% url 'lista_productos' %}" class="btn btn-secondary">Cancelar</a>
+    {% endif %}
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+staticfiles/
+local_settings.py
+
+# Entorno virtual
+venv/
+env/
+django_env/
+ENV/
+.venv/
+.python-version
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# Archivos de IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de pruebas / coverage
+.coverage
+htmlcov/
+.tox/
+.nox/
+pytest_cache/
+test_output/
+
+# Archivos de compilación / cache
+*.egg-info/
+*.egg
+dist/
+build/
+pip-wheel-metadata/
+
+# Archivos de configuración privada
+.env
+.env.*
+*.secret
+*.key
+*.pem
+
+# Archivos generados por herramientas
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos temporales
+*.tmp
+*.bak
+*.swp

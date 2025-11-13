@@ -1,0 +1,14 @@
+{% extends 'productos/base.html' %}
+{% block contenido %}
+<div class="container mt-4">
+    <h2>Eliminar {{ tipo|capfirst }}</h2>
+    <div class="alert alert-danger">
+        ¿Confirmas eliminar "<strong>{{ nombre_objeto }}</strong>"?
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a href="{{ lista_url }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

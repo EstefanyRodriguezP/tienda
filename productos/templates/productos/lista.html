@@ -1,0 +1,82 @@
+{% extends "productos/base.html" %}
+{% load static %}
+
+{% block contenido %}
+<div class="mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-0">{{ titulo }}</h1>
+
+        <!-- Botón crear según tipo -->
+        {% if tipo == 'productos' %}
+            <a href="{% url 'crear_producto' %}" class="btn btn-success">+ Crear producto</a>
+        {% elif tipo == 'categorias' %}
+            <a href="{% url 'crear_categoria' %}" class="btn btn-success">+ Crear categoría</a>
+        {% elif tipo == 'etiquetas' %}
+            <a href="{% url 'crear_etiqueta' %}" class="btn btn-success">+ Crear etiqueta</a>
+        {% endif %}
+    </div>
+
+    {% if items %}
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    {% if tipo == 'productos' %}
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Categoría</th>
+                        <th>Acciones</th>
+                    {% elif tipo == 'categorias' %}
+                        <th>Nombre</th>
+                        <th># Productos</th>
+                        <th>Acciones</th>
+                    {% elif tipo == 'etiquetas' %}
+                        <th>Nombre</th>
+                        <th>Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        {% if tipo == 'productos' %}
+                            <td>{{ item.nombre }}</td>
+                            <td>${{ item.precio }}</td>
+                            <td>{{ item.categoria.nombre }}</td>
+                            <td class="text-nowrap">
+                                <a class="btn btn-sm btn-primary" href="{% url 'detalle_producto' item.id %}">Ver</a>
+                                <a class="btn btn-sm btn-warning" href="{% url 'editar_producto' item.id %}">Editar</a>
+                                <a class="btn btn-sm btn-danger" href="{% url 'eliminar_producto' item.id %}">Eliminar</a>
+                            </td>
+                        {% elif tipo == 'categorias' %}
+                            <td>{{ item.nombre }}</td>
+                            <td>{{ item.num_productos }}</td>
+                            <td class="text-nowrap">
+                                <a class="btn btn-sm btn-warning" href="{% url 'editar_categoria' item.id %}">Editar</a>
+                                <a class="btn btn-sm btn-danger" href="{% url 'eliminar_categoria' item.id %}">Eliminar</a>
+                            </td>
+                        {% elif tipo == 'etiquetas' %}
+                            <td>{{ item.nombre }}</td>
+                            <td class="text-nowrap">
+                                <a class="btn btn-sm btn-warning" href="{% url 'editar_etiqueta' item.id %}">Editar</a>
+                                <a class="btn btn-sm btn-danger" href="{% url 'eliminar_etiqueta' item.id %}">Eliminar</a>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-secondary">
+            No hay {{ tipo }} disponibles.
+            <!-- Si no hay items, también proponemos crear -->
+            {% if tipo == 'productos' %}
+                <a href="{% url 'crear_producto' %}" class="btn btn-sm btn-success ms-2">Crear producto</a>
+            {% elif tipo == 'categorias' %}
+                <a href="{% url 'crear_categoria' %}" class="btn btn-sm btn-success ms-2">Crear categoría</a>
+            {% elif tipo == 'etiquetas' %}
+                <a href="{% url 'crear_etiqueta' %}" class="btn btn-sm btn-success ms-2">Crear etiqueta</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
