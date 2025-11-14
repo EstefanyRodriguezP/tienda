@@ -146,25 +146,21 @@ Luego abre tu navegador en:
 
 ## 🧠 Creación datos de ejemplo mediante ORM
 
-```bash
-from productos.models import Producto, Categoria
-
-# Creación de categorías
+### Creación de categorías
 ![Creación categorías](screenshots/categorias_ORM.png)
-
-# Creación de etiquetas
+---
+### Creación de etiquetas
 ![Creación etiquetas](screenshots/etiquetas_ORM.png)
-
-# Creación de productos
+---
+### Creación de productos
 ![Creación productos](screenshots/productos_ORM.png)
-
-# Asociar etiquetas a los productos
+---
+### Asociar etiquetas a los productos
 ![Asociar etiquetas a los productos](screenshots/etiquetas_productos.png)
-
-# Consultas de prueba
+---
+### Consultas de prueba
 ![Consultas de prueba](screenshots/consultas.png)
 
-```
 
 ---
 
@@ -192,25 +188,25 @@ Producto.objects.all().order_by('-precio')
 ---
 
 ## 🖼️ Capturas de pantalla
-```bash
+
 ### Página de inicio
 ![Inicio](screenshots/inicio.png)
-
+---
 ### Lista de productos
 ![Productos](screenshots/productos.png)
-
+---
 ### Detalle producto
 ![Detalle producto](screenshots/detalle_producto.png)
-
+---
 ### Crear producto
 ![Crear producto](screenshots/crear_producto.png)
-
+---
 ### Eliminar etiqueta
 ![Eliminar etiqueta](screenshots/eliminar_etiqueta.png)
-
+---
 ### Panel de administración
 ![Admin](screenshots/admin.png)
-```
+
 
 ---
 
