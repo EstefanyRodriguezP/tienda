@@ -72,7 +72,7 @@ CREATE DATABASE IF NOT EXISTS tienda_db CHARACTER SET utf8mb4 COLLATE utf8mb4_un
 USE tienda_db;
 ```
 Edita tienda/settings.py con tus credenciales:
-```bash
+```python
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -101,6 +101,29 @@ Luego abre tu navegador en:
 👉 http://127.0.0.1:8000/
 
 ---
+## 💾 Integración de Django con bases de datos
+
+Django permite conectarse a distintos motores de bases de datos, como SQLite (por defecto), MySQL, PostgreSQL y Oracle. La conexión se gestiona desde el archivo `settings.py` mediante la configuración del diccionario `DATABASES`.  
+
+El ORM (Object-Relational Mapper) de Django permite trabajar con la base de datos utilizando objetos Python, evitando escribir sentencias SQL manuales en la mayoría de los casos. Las operaciones CRUD (crear, leer, actualizar, eliminar) se realizan a través de métodos como `.create()`, `.get()`, `.filter()`, `.update()` y `.delete()`.  
+
+**Ejemplo:**  
+En `settings.py` se define la conexión con MySQL:
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'tienda_db',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
+```
+Django maneja automáticamente las conexiones y el cierre de estas cuando se ejecutan consultas a través del ORM.
+---
 ## 🧩 Modelos implementados
 
 ### 🛒 Producto
@@ -123,6 +146,76 @@ Luego abre tu navegador en:
 - nombre: CharField
 - dimensiones: CharField
 - Relación: uno a uno con Producto.
+
+
+### 📦 Modelo sin relaciones
+
+Se puede implementar un modelo simple sin relaciones, que genere una tabla independiente en la base de datos.
+
+**Ejemplo:**
+
+```python
+from django.db import models
+
+class ProductoSimple(models.Model):
+    nombre = models.CharField(max_length=100)
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    cantidad = models.IntegerField()
+```
+Este modelo no se relaciona con ninguna otra tabla y puede ser gestionado con migraciones y el ORM de Django.
+
+### 🔗 Modelos con relaciones
+
+- **OneToOneField**: `Producto` ↔ `DetalleProducto` (un producto tiene un detalle único)  
+- **ForeignKey**: `Producto` ↔ `Categoria` (una categoría puede tener muchos productos)  
+- **ManyToManyField**: `Producto` ↔ `Etiqueta` (un producto puede tener muchas etiquetas y viceversa)  
+
+**Ejemplo de uso:**
+```python
+# Crear un detalle de producto
+detalle = DetalleProducto.objects.create(dimensiones="10x20x5", peso="1kg")
+# Asociar detalle a producto
+producto = Producto.objects.create(nombre="Laptop", precio=1000, categoria=categoria)
+producto.detalle = detalle
+producto.etiquetas.set([etiqueta1, etiqueta2])
+```
+
+### 🔄 Migraciones
+
+Para propagar los cambios de los modelos a la base de datos, Django utiliza migraciones.  
+
+**Ejemplo:**
+
+```bash
+# Crear migraciones
+python manage.py makemigrations
+
+# Aplicar migraciones a la base de datos
+python manage.py migrate
+```
+Si se agrega un nuevo campo o modelo, estas instrucciones actualizan automáticamente el esquema en MySQL.
+
+
+### 🖥️ Aplicación CRUD
+
+Esta aplicación implementa el patrón MVC mediante:
+
+- **Modelos**: `Producto`, `Categoria`, `Etiqueta`, `DetalleProducto`  
+- **Vistas**: funciones en `views.py` para crear, listar, editar y eliminar registros  
+- **Templates**: HTML con Bootstrap para mostrar formularios y listas  
+- **URLs**: rutas en `urls.py` que llaman a las vistas correspondientes  
+
+**Ejemplo:** eliminar un producto:
+
+```python
+def eliminar_producto(request, id):
+    producto = get_object_or_404(Producto, pk=id)
+    if request.method == 'POST':
+        producto.delete()
+        messages.success(request, "Producto eliminado.")
+        return redirect('lista_productos')
+    return render(request, 'productos/eliminar.html', {'producto': producto})
+```
 
 ---
 
@@ -164,25 +257,34 @@ Luego abre tu navegador en:
 
 ---
 
-## 🧠 Otras consultas ORM de ejemplo
+## 🧠 Otras consultas con ORM y SQL de ejemplo
 
-```bash
-from productos.models import Producto, Categoria
+Django ORM permite consultas de filtrado, exclusión, ordenamiento y anotaciones:
 
+```python
 # Filtrar productos por categoría
 Producto.objects.filter(categoria__nombre="Electrónica")
-
-# Productos con precio mayor a 50000
-Producto.objects.filter(precio__gt=50000)
 
 # Excluir productos de una categoría
 Producto.objects.exclude(categoria__nombre="Hogar")
 
+# Productos con precio mayor a 50000
+Producto.objects.filter(precio__gt=50000)
+
 # Consultas con etiquetas
 Producto.objects.filter(etiquetas__nombre="Oferta")
 
-# Obtener productos ordenados por precio
+# Ordenar productos por precio descendente
 Producto.objects.all().order_by('-precio')
+```
+
+Para consultas más avanzadas, se puede usar raw() para ejecutar SQL directamente:
+
+```python
+Producto.objects.raw("SELECT * FROM productos_producto WHERE precio > 50000")
+```
+```sql
+SELECT * FROM productos_producto WHERE precio > 50000;
 ```
 
 ---
@@ -207,6 +309,29 @@ Producto.objects.all().order_by('-precio')
 ### Panel de administración
 ![Admin](screenshots/admin.png)
 
+
+---
+## ⚙️ Aplicaciones preinstaladas
+
+Django incluye aplicaciones listas para usar que facilitan el desarrollo:
+
+- **django.contrib.admin** → Panel de administración
+- **django.contrib.auth** → Gestión de usuarios y permisos
+- **django.contrib.sessions** → Manejo de sesiones
+- **django.contrib.messages** → Mensajes flash en la UI
+- **django.contrib.staticfiles** → Gestión de archivos estáticos  
+
+**Ejemplo:** `admin.py` registra los modelos para el panel de administración:
+
+```python
+from django.contrib import admin
+from .models import Producto, Categoria, Etiqueta, DetalleProducto
+
+@admin.register(Producto)
+class ProductoAdmin(admin.ModelAdmin):
+    list_display = ('id','nombre','precio','categoria','creado_en')
+    list_filter = ('categoria','etiquetas')
+```
 
 ---
 
